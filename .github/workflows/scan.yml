@@ -1,0 +1,66 @@
+name: Trading bot scan (test on free GitHub Actions runner)
+
+# Runs `main.py` (one pipeline pass across every configured symbol/timeframe)
+# on a schedule, using a GitHub-hosted runner instead of a paid always-on
+# server. This is a TEST harness, not the permanent deployment:
+#   - No live web dashboard (that needs an always-on process; see CLAUDE.md).
+#   - data/trading.db is NOT permanently persisted — it's cached between runs
+#     on a best-effort basis (GitHub's cache can be evicted at any time) and
+#     also uploaded as a downloadable artifact each run so you can inspect it.
+# Use this to confirm fetch -> indicators -> signal -> alert works end to end
+# before committing to a real VM/host.
+
+on:
+  schedule:
+    - cron: "0 * * * *"   # every hour, on the hour (UTC) — GitHub may delay a few minutes
+  workflow_dispatch: {}    # lets you trigger a run manually from the Actions tab
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+          cache-dependency-path: requirements.txt
+
+      - name: Restore previous trading.db (best-effort, may be a cache miss)
+        uses: actions/cache/restore@v4
+        with:
+          path: data/trading.db
+          key: trading-db-${{ github.run_id }}
+          restore-keys: |
+            trading-db-
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run one scan pass (fetch -> indicators -> signal -> alert)
+        env:
+          DATABASE_PATH: data/trading.db
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          EMAIL_USERNAME: ${{ secrets.EMAIL_USERNAME }}
+          EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+        run: python main.py
+
+      - name: Save trading.db back to cache for next run
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: data/trading.db
+          key: trading-db-${{ github.run_id }}
+
+      - name: Upload trading.db as a downloadable artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: trading-db-${{ github.run_id }}
+          path: data/trading.db
+          retention-days: 7
+          if-no-files-found: ignore
