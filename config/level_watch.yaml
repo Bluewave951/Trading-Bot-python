@@ -1,0 +1,34 @@
+# Standalone S/R proximity watcher (src/level_watcher.py) — user-requested
+# ad-hoc monitor (2026-09-04), independent of the BUY-only trading strategy's
+# watchlist in symbols.yaml. Alerts (Discord + Telegram) fire only when
+# price is within `proximity_pct` of a support/resistance level detected by
+# src.indicators.support_resistance (the bot's own swing-clustering
+# algorithm — NOT the same numbers as TradingView/SMC-based analysis).
+
+check_interval_minutes: 30
+proximity_pct: 0.01   # 1% — how close price must be to a level to alert
+timeframe: "1h"
+
+watchlist:
+  stock:
+    - { ticker: NBIS, source: yfinance }
+    - { ticker: ORCL, source: yfinance }
+    - { ticker: WDC, source: yfinance }
+    - { ticker: PLTR, source: yfinance }
+    - { ticker: AVGO, source: yfinance }
+    - { ticker: TSM, source: yfinance }
+    - { ticker: NVDA, source: yfinance }
+    - { ticker: VOO, source: yfinance }
+    - { ticker: QQQM, source: yfinance }
+
+  commodity:
+    - { ticker: GC=F, source: yfinance }   # Gold futures — XAUUSD=X is dead on yfinance (404)
+
+  crypto:
+    - { ticker: BTC/USDT, source: binance }
+    - { ticker: BNB/USDT, source: binance }
+    - { ticker: XRP/USDT, source: binance }
+    - { ticker: DOGE/USDT, source: binance }
+    - { ticker: NEAR/USDT, source: binance }
+    - { ticker: SUSHI/USDT, source: binance }
+    - { ticker: ADA/USDT, source: binance }

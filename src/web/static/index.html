@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Trading Bot Dashboard</title>
+  <link rel="stylesheet" href="/static/styles.css" />
+</head>
+<body>
+  <div class="page">
+    <header>
+      <div>
+        <h1>Trading Bot Dashboard</h1>
+        <p class="subtitle">Long-only signal monitor — not a live trading terminal. See README for validation status.</p>
+      </div>
+      <span id="conn-badge" class="conn-badge">
+        <span class="conn-dot"></span>
+        <span id="conn-text">connecting…</span>
+      </span>
+    </header>
+
+    <section class="stat-tiles" id="signal-stats">
+      <div class="stat-tile"><div class="label">Total Signals</div><div class="value" id="stat-total">–</div></div>
+      <div class="stat-tile"><div class="label">Open</div><div class="value" id="stat-open">–</div></div>
+      <div class="stat-tile"><div class="label">Hit TP</div><div class="value good" id="stat-tp">–</div></div>
+      <div class="stat-tile"><div class="label">Hit SL</div><div class="value critical" id="stat-sl">–</div></div>
+    </section>
+
+    <section class="card">
+      <h2>Recent Signals</h2>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Time</th><th>Symbol</th><th>TF</th><th>Side</th>
+              <th>Entry</th><th>SL</th><th>TP</th><th>R:R</th><th>Confidence</th><th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="signals-body">
+            <tr><td colspan="10" class="empty-state">Loading…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Run a Backtest</h2>
+      <form class="backtest-form" id="backtest-form">
+        <div class="field">
+          <label for="bt-symbol">Symbol</label>
+          <input id="bt-symbol" type="text" value="BTC/USDT" placeholder="AAPL or BTC/USDT" required />
+        </div>
+        <div class="field">
+          <label for="bt-timeframe">Timeframe</label>
+          <select id="bt-timeframe">
+            <option value="1h">1h</option>
+            <option value="4h">4h</option>
+            <option value="1d">1d</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="bt-limit">Candles</label>
+          <input id="bt-limit" type="number" value="1000" min="100" max="10000" step="100" />
+        </div>
+        <button type="submit" id="bt-submit">Run Backtest</button>
+      </form>
+      <div class="toast" id="bt-toast"></div>
+      <div id="backtest-results"></div>
+    </section>
+
+    <section class="card">
+      <h2>Level Watcher Alerts</h2>
+      <p class="subtitle" style="margin-bottom:12px;">
+        S/R-proximity alerts from <code>src/level_watcher.py</code> (separate from the BUY strategy above) — every time a watched symbol comes within its configured % of a support/resistance level.
+      </p>
+      <div class="stat-tiles" id="level-alert-stats">
+        <div class="stat-tile"><div class="label">Total Alerts</div><div class="value" id="la-stat-total">–</div></div>
+        <div class="stat-tile"><div class="label">Today</div><div class="value" id="la-stat-today">–</div></div>
+        <div class="stat-tile"><div class="label">Near Support</div><div class="value" id="la-stat-support">–</div></div>
+        <div class="stat-tile"><div class="label">Near Resistance</div><div class="value" id="la-stat-resistance">–</div></div>
+      </div>
+
+      <h3 style="font-size:0.9rem;color:var(--text-secondary);margin:16px 0 8px;">Alerts per day (last 14 days)</h3>
+      <div id="la-chart-daily"></div>
+
+      <h3 style="font-size:0.9rem;color:var(--text-secondary);margin:16px 0 8px;">Alerts by symbol</h3>
+      <div id="la-chart-symbol"></div>
+
+      <h3 style="font-size:0.9rem;color:var(--text-secondary);margin:16px 0 8px;">Recent alert log</h3>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr><th>Time</th><th>Symbol</th><th>TF</th><th>Type</th><th>Level</th><th>Price</th><th>Distance</th></tr>
+          </thead>
+          <tbody id="level-alerts-body">
+            <tr><td colspan="7" class="empty-state">Loading…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Send a Test Alert</h2>
+      <p class="subtitle" style="margin-bottom:12px;">Dispatches to every notification channel currently enabled in <code>config/alerts.yaml</code>.</p>
+      <button type="button" id="test-alert-btn" class="secondary">Send Test Alert</button>
+      <div class="toast" id="alert-toast"></div>
+    </section>
+  </div>
+
+  <script src="/static/charts.js"></script>
+</body>
+</html>

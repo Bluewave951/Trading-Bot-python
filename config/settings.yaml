@@ -1,0 +1,37 @@
+# Indicator parameters, timeframes, and risk settings.
+
+timeframes:
+  - 1h
+  - 4h
+  - 1d
+
+data_sources:
+  binance_enabled: true
+  yfinance_enabled: true
+  tradingview_enabled: false
+  refresh_interval_1h: 300     # seconds (5 min)
+  refresh_interval_4h: 900     # seconds (15 min)
+  refresh_interval_1d: 3600    # seconds (1 hour)
+
+indicators:
+  rsi_period: 14
+  ema_periods: [20, 50, 200]
+  macd: { fast: 12, slow: 26, signal: 9 }
+  bollinger: { period: 20, std_dev: 2 }
+  atr_period: 14
+  volume_avg_period: 20
+  sr_lookback_candles: 50
+  sr_min_touches: 2
+  fib_levels: [0.236, 0.382, 0.5, 0.618, 0.786]
+
+risk:
+  default_sl_pct: 0.02
+  risk_reward_ratio: 1.5
+  profit_target_min_pct: 0.30
+  profit_target_max_pct: 0.50
+  max_position_risk_pct: 0.02
+
+scheduler:
+  scan_interval_1h_seconds: 60      # every 1 min, per plan
+  scan_interval_4h_seconds: 300     # every 5 min
+  scan_1d_at_utc: "00:00"

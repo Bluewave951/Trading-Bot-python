@@ -1,0 +1,23 @@
+# Notification channel toggles. Secrets (tokens, passwords) live in `.env`,
+# never in this file.
+
+telegram:
+  enabled: true
+  commands:
+    - /status
+    - /analyze
+    - /backtest
+    - /settings
+    - /chart
+
+discord:
+  enabled: true
+
+email:
+  enabled: true
+  send_chart_screenshot: true
+
+delivery:
+  max_retries: 3
+  retry_backoff_seconds: 5
+  queue_max_size: 500

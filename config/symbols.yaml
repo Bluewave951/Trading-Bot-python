@@ -1,0 +1,25 @@
+# Watchlist: which instruments to analyze, grouped by asset class.
+# `source` must be one of: yfinance | binance | tradingview
+
+watchlist:
+  stock:
+    - ticker: AAPL
+      source: yfinance
+    - ticker: NVDA
+      source: yfinance
+    - ticker: TSLA
+      source: yfinance
+    - ticker: SPY
+      source: yfinance
+
+  crypto:
+    - ticker: BTC/USDT
+      source: binance
+    - ticker: ETH/USDT
+      source: binance
+    - ticker: SOL/USDT
+      source: binance
+
+  commodity:
+    - ticker: GC=F        # Gold futures (yfinance) — XAUUSD=X was dropped,
+      source: yfinance    # Yahoo Finance no longer serves that symbol

@@ -1,0 +1,281 @@
+/* Dashboard styling.
+ * Palette follows the project's data-viz method (see dataviz skill /
+ * references/palette.md): CSS custom properties per role, light+dark both
+ * selected (not just an automatic OS flip), status colors reserved for
+ * pass/fail state, categorical slot 1 (blue) for the single-series equity
+ * line.
+ */
+
+:root {
+  color-scheme: light;
+  --surface-1:      #fcfcfb;
+  --page-plane:     #f9f9f7;
+  --text-primary:   #0b0b0b;
+  --text-secondary: #52514e;
+  --text-muted:     #898781;
+  --gridline:       #e1e0d9;
+  --baseline:       #c3c2b7;
+  --border:         rgba(11, 11, 11, 0.10);
+  --series-1:       #2a78d6; /* categorical slot 1 — equity line, support */
+  --series-2:       #eb6834; /* categorical slot 2 — resistance */
+  --delta-good:     #006300;
+  --status-good:    #0ca30c;
+  --status-warning: #fab219;
+  --status-serious: #ec835a;
+  --status-critical:#d03b3b;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:where(:not([data-theme="light"])) {
+    color-scheme: dark;
+    --surface-1:      #1a1a19;
+    --page-plane:     #0d0d0d;
+    --text-primary:   #ffffff;
+    --text-secondary: #c3c2b7;
+    --text-muted:     #898781;
+    --gridline:       #2c2c2a;
+    --baseline:       #383835;
+    --border:         rgba(255, 255, 255, 0.10);
+    --series-1:       #3987e5;
+    --series-2:       #d95926;
+    --delta-good:     #0ca30c;
+    --status-good:    #0ca30c;
+    --status-warning: #fab219;
+    --status-serious: #ec835a;
+    --status-critical:#e66767;
+  }
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --surface-1:      #1a1a19;
+  --page-plane:     #0d0d0d;
+  --text-primary:   #ffffff;
+  --text-secondary: #c3c2b7;
+  --text-muted:     #898781;
+  --gridline:       #2c2c2a;
+  --baseline:       #383835;
+  --border:         rgba(255, 255, 255, 0.10);
+  --series-1:       #3987e5;
+  --series-2:       #d95926;
+  --delta-good:     #0ca30c;
+  --status-good:    #0ca30c;
+  --status-warning: #fab219;
+  --status-serious: #ec835a;
+  --status-critical:#e66767;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  background: var(--page-plane);
+  color: var(--text-primary);
+}
+
+.page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 24px 20px 64px;
+}
+
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 24px;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+h1 {
+  font-size: 1.4rem;
+  margin: 0;
+}
+
+h2 {
+  font-size: 1.05rem;
+  margin: 0 0 12px;
+  color: var(--text-primary);
+}
+
+.subtitle {
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+  margin: 4px 0 0;
+}
+
+.conn-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface-1);
+}
+
+.conn-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--status-critical);
+}
+
+.conn-badge.connected .conn-dot {
+  background: var(--status-good);
+}
+
+.card {
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 18px 20px;
+  margin-bottom: 20px;
+}
+
+.stat-tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.stat-tile {
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
+}
+
+.stat-tile .label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.stat-tile .value {
+  font-size: 1.6rem;
+  font-weight: 600;
+  margin-top: 4px;
+  font-variant-numeric: tabular-nums;
+}
+
+.stat-tile .value.good { color: var(--delta-good); }
+.stat-tile .value.critical { color: var(--status-critical); }
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+th, td {
+  text-align: left;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--gridline);
+  font-variant-numeric: tabular-nums;
+}
+
+th {
+  color: var(--text-muted);
+  font-weight: 500;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+
+.table-scroll {
+  overflow-x: auto;
+}
+
+.pill {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.pill.buy { background: color-mix(in srgb, var(--series-1) 18%, transparent); color: var(--series-1); }
+.pill.open { background: color-mix(in srgb, var(--status-warning) 22%, transparent); color: var(--text-primary); }
+/* Signal.status values (Recent Signals table): hit_tp/hit_sl. */
+.pill.hit_tp { background: color-mix(in srgb, var(--status-good) 20%, transparent); color: var(--delta-good); }
+.pill.hit_sl { background: color-mix(in srgb, var(--status-critical) 18%, transparent); color: var(--status-critical); }
+/* BacktestTrade.exit_reason values (Trade Log table): tp/sl/signal_exit/end_of_data. */
+.pill.tp { background: color-mix(in srgb, var(--status-good) 20%, transparent); color: var(--delta-good); }
+.pill.sl { background: color-mix(in srgb, var(--status-critical) 18%, transparent); color: var(--status-critical); }
+.pill.signal_exit, .pill.expired, .pill.end_of_data { background: var(--gridline); color: var(--text-secondary); }
+/* level_watcher.py's kind values — categorical identity (slot 1/2), not status. */
+.pill.support { background: color-mix(in srgb, var(--series-1) 18%, transparent); color: var(--series-1); }
+.pill.resistance { background: color-mix(in srgb, var(--series-2) 18%, transparent); color: var(--series-2); }
+
+.chart-legend { display: flex; flex-wrap: wrap; gap: 4px 0; }
+.chart-legend .swatch { width: 8px; height: 8px; border-radius: 2px; display: inline-block; }
+
+.check-list { list-style: none; padding: 0; margin: 12px 0 0; }
+.check-list li { padding: 4px 0; font-size: 0.9rem; display: flex; align-items: center; gap: 8px; }
+.check-icon.pass { color: var(--status-good); }
+.check-icon.fail { color: var(--status-critical); }
+
+form.backtest-form {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  margin-bottom: 16px;
+}
+
+.field { display: flex; flex-direction: column; gap: 4px; }
+.field label { font-size: 0.75rem; color: var(--text-muted); }
+.field input, .field select {
+  padding: 7px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--page-plane);
+  color: var(--text-primary);
+  font-size: 0.9rem;
+}
+
+button {
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: none;
+  background: var(--series-1);
+  color: white;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+button:disabled { opacity: 0.6; cursor: default; }
+button.secondary { background: var(--surface-1); color: var(--text-primary); border: 1px solid var(--border); }
+
+.empty-state {
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  padding: 24px 0;
+  text-align: center;
+}
+
+.verdict {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 0 0 4px;
+}
+.verdict.pass { color: var(--delta-good); }
+.verdict.fail { color: var(--status-critical); }
+
+.equity-chart-wrap { overflow-x: auto; }
+.equity-chart-wrap svg { display: block; }
+
+.toast {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-top: 8px;
+  min-height: 1.2em;
+}
