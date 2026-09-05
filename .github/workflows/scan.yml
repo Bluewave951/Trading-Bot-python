@@ -13,7 +13,12 @@ name: Trading bot scan (test on free GitHub Actions runner)
 on:
   schedule:
     - cron: "0 * * * *"   # every hour, on the hour (UTC) — GitHub may delay a few minutes
-  workflow_dispatch: {}    # lets you trigger a run manually from the Actions tab
+  workflow_dispatch:       # lets you trigger a run manually from the Actions tab
+    inputs:
+      send_test_alert:
+        description: "Also send a test message on every configured alert channel (Telegram/Discord/Email), independent of any BUY signal"
+        type: boolean
+        default: false
 
 jobs:
   scan:
@@ -48,6 +53,16 @@ jobs:
           EMAIL_USERNAME: ${{ secrets.EMAIL_USERNAME }}
           EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
         run: python main.py
+
+      - name: Send test alert (manual, opt-in)
+        if: github.event_name == 'workflow_dispatch' && inputs.send_test_alert
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          EMAIL_USERNAME: ${{ secrets.EMAIL_USERNAME }}
+          EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+        run: python scripts/send_test_alert.py
 
       - name: Save trading.db back to cache for next run
         if: always()
