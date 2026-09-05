@@ -14,11 +14,11 @@ router = APIRouter()
 
 
 def _resolve_symbol(ticker: str) -> Symbol:
-    """`BTC/USDT`-shaped tickers route to Binance/crypto; anything else is
+    """`BTC/USDT`-shaped tickers route to OKX/crypto; anything else is
     treated as a yfinance stock ticker (same rule as `telegram_bot.py`)."""
     ticker = ticker.upper()
     if "/" in ticker:
-        return Symbol(ticker=ticker, asset_class=AssetClass.CRYPTO, source="binance")
+        return Symbol(ticker=ticker, asset_class=AssetClass.CRYPTO, source="okx")
     return Symbol(ticker=ticker, asset_class=AssetClass.STOCK, source="yfinance")
 
 

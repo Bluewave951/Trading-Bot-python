@@ -1,1 +1,1 @@
-"""Crypto analyzer (Bitcoin, Ethereum, Solana via Binance). TODO: implement."""
+"""Crypto analyzer (Bitcoin, Ethereum, Solana via OKX). TODO: implement."""

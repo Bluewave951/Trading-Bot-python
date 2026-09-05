@@ -112,7 +112,7 @@ def test_check_symbol_alerts_when_near_resistance(monkeypatch):
         lambda candles: _snapshot(close=100.0, support=[10.0], resistance=[100.5]),
     )
     fetcher = _FakeFetcher(n=300)
-    symbol = Symbol(ticker="BTC/USDT", asset_class=AssetClass.CRYPTO, source="binance")
+    symbol = Symbol(ticker="BTC/USDT", asset_class=AssetClass.CRYPTO, source="okx")
     result = level_watcher.check_symbol(fetcher, symbol, "1h", proximity_pct=0.01)
     assert result is not None
     assert result.hits[0].kind == "resistance"

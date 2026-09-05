@@ -32,7 +32,7 @@ def _load_yaml(filename: str) -> dict[str, Any]:
 @dataclass
 class DataSourceConfig:
     """Which data providers are enabled and their refresh intervals (seconds)."""
-    binance_enabled: bool = True
+    okx_enabled: bool = True
     yfinance_enabled: bool = True
     tradingview_enabled: bool = False  # requires MCP session
     refresh_interval_1h: int = 300      # 5 min

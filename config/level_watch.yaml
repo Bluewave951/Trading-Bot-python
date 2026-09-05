@@ -25,10 +25,10 @@ watchlist:
     - { ticker: GC=F, source: yfinance }   # Gold futures — XAUUSD=X is dead on yfinance (404)
 
   crypto:
-    - { ticker: BTC/USDT, source: binance }
-    - { ticker: BNB/USDT, source: binance }
-    - { ticker: XRP/USDT, source: binance }
-    - { ticker: DOGE/USDT, source: binance }
-    - { ticker: NEAR/USDT, source: binance }
-    - { ticker: SUSHI/USDT, source: binance }
-    - { ticker: ADA/USDT, source: binance }
+    - { ticker: BTC/USDT, source: okx }
+    - { ticker: BNB/USDT, source: okx }
+    - { ticker: XRP/USDT, source: okx }
+    - { ticker: DOGE/USDT, source: okx }
+    - { ticker: NEAR/USDT, source: okx }
+    - { ticker: SUSHI/USDT, source: okx }
+    - { ticker: ADA/USDT, source: okx }
