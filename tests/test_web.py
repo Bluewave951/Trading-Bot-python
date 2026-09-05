@@ -229,7 +229,7 @@ def test_run_backtest_api_rejects_insufficient_data(client, monkeypatch):
 
 @pytest.mark.parametrize(
     "ticker,expected_source",
-    [("btc/usdt", "binance"), ("aapl", "yfinance")],
+    [("btc/usdt", "okx"), ("aapl", "yfinance")],
 )
 def test_resolve_symbol_routes_by_ticker_shape(ticker, expected_source):
     symbol = backtest_route._resolve_symbol(ticker)

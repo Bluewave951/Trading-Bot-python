@@ -61,7 +61,7 @@ class Symbol:
     ticker: str                # e.g. "AAPL", "BTC/USDT", "XAUUSD"
     asset_class: AssetClass
     display_name: str = ""
-    source: str = "yfinance"   # "yfinance" | "binance" | "tradingview"
+    source: str = "yfinance"   # "yfinance" | "okx" | "tradingview"
 
     def __post_init__(self) -> None:
         if not self.display_name:

@@ -6,7 +6,7 @@ timeframes:
   - 1d
 
 data_sources:
-  binance_enabled: true
+  okx_enabled: true
   yfinance_enabled: true
   tradingview_enabled: false
   refresh_interval_1h: 300     # seconds (5 min)

@@ -66,11 +66,11 @@ class TelegramNotifier:
 # testable without a live bot/network round-trip.
 
 def _resolve_symbol(ticker: str) -> Symbol:
-    """`BTC/USDT`-shaped tickers are routed to Binance/crypto; anything
+    """`BTC/USDT`-shaped tickers are routed to OKX/crypto; anything
     else is treated as a yfinance stock ticker."""
     ticker = ticker.upper()
     if "/" in ticker:
-        return Symbol(ticker=ticker, asset_class=AssetClass.CRYPTO, source="binance")
+        return Symbol(ticker=ticker, asset_class=AssetClass.CRYPTO, source="okx")
     return Symbol(ticker=ticker, asset_class=AssetClass.STOCK, source="yfinance")
 
 

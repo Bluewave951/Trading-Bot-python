@@ -1,5 +1,5 @@
 # Watchlist: which instruments to analyze, grouped by asset class.
-# `source` must be one of: yfinance | binance | tradingview
+# `source` must be one of: yfinance | okx | tradingview
 
 watchlist:
   stock:
@@ -14,11 +14,11 @@ watchlist:
 
   crypto:
     - ticker: BTC/USDT
-      source: binance
+      source: okx
     - ticker: ETH/USDT
-      source: binance
+      source: okx
     - ticker: SOL/USDT
-      source: binance
+      source: okx
 
   commodity:
     - ticker: GC=F        # Gold futures (yfinance) — XAUUSD=X was dropped,

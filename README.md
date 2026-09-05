@@ -38,7 +38,7 @@ python main.py            # one full pass: fetch -> indicators -> signal -> aler
 python -m src.scheduler   # same pipeline, running continuously on the configured cadence
 ```
 
-Both fetch OHLCV for every watchlist symbol/timeframe from yfinance/Binance
+Both fetch OHLCV for every watchlist symbol/timeframe from yfinance/OKX
 (caching via Redis if available, else in-memory automatically — no Redis
 server required), compute indicators, check for a BUY signal, and on a hit
 persist it to `data/trading.db` and dispatch alerts via whichever
@@ -91,8 +91,8 @@ from src.backtesting.backtest_stats import calculate_stats, validate_strategy
 from src.backtesting.backtest_reports import export_trades_csv, generate_html_report
 
 fetcher = DataFetcher()
-symbol = Symbol(ticker="BTC/USDT", asset_class=AssetClass.CRYPTO, source="binance")
-# limit=8760 = ~1 year of 1h candles; BinanceFetcher/YFinanceFetcher page
+symbol = Symbol(ticker="BTC/USDT", asset_class=AssetClass.CRYPTO, source="okx")
+# limit=8760 = ~1 year of 1h candles; OKXFetcher/YFinanceFetcher page
 # past their single-call caps automatically for limits this large.
 candles = fetcher.fetch_ohlcv(symbol, "1h", limit=8760)
 
@@ -103,6 +103,20 @@ validation = validate_strategy(stats)  # win_rate>=50%, profit_factor>=1.5, max_
 export_trades_csv(result, "data/backtest_trades.csv")
 generate_html_report(result, stats, validation, "data/backtest_report.html")
 ```
+
+### Switched crypto data source: Binance → OKX (2026-09-05)
+
+The GitHub Actions scan workflow was "green" every hour but never actually
+found data: `api.binance.com` returns HTTP 451 ("restricted location") to
+GitHub-hosted runner IPs, so every crypto fetch failed, was swallowed by
+the fallback-to-cache handling in `DataFetcher.fetch_ohlcv`, and the run
+logged `0 signal(s) found` — with no exception, so CI never went red.
+Replaced `BinanceFetcher` with `OKXFetcher` (`src/data/data_fetcher.py`,
+`source: okx` in `config/symbols.yaml`/`config/level_watch.yaml`); OKX's
+public market-data endpoints aren't geo-blocked for those runners and
+ccxt's unified `BTC/USDT`-style symbols need no other changes. Note OKX's
+per-call candle cap is 300, not Binance's 1000 — `_MAX_LIMIT_PER_CALL` was
+adjusted accordingly so `_fetch_paginated` still pages correctly.
 
 ### Entry/exit tuning (2026-09-04)
 

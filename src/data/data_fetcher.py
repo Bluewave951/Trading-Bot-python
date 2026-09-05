@@ -1,9 +1,9 @@
-"""Unified API client for all data sources (yfinance, Binance via ccxt,
+"""Unified API client for all data sources (yfinance, OKX via ccxt,
 TradingView MCP placeholder).
 
 Usage:
     fetcher = DataFetcher()
-    candles = fetcher.fetch_ohlcv(Symbol("BTC/USDT", AssetClass.CRYPTO, source="binance"), "1h")
+    candles = fetcher.fetch_ohlcv(Symbol("BTC/USDT", AssetClass.CRYPTO, source="okx"), "1h")
 
 All fetchers return a normalized `list[Candle]`, oldest-first. Results are
 cached (via `cache_manager`) and persisted to SQLite (via `Database`) so
@@ -24,7 +24,7 @@ logger = get_logger(__name__)
 
 # yfinance interval strings per our internal timeframe names.
 _YF_INTERVAL = {"1h": "60m", "4h": "60m", "1d": "1d"}  # 4h resampled from 60m
-# ccxt/Binance timeframe strings map 1:1 with ours except naming.
+# ccxt/OKX timeframe strings map 1:1 with ours except naming.
 _CCXT_TIMEFRAME = {"1h": "1h", "4h": "4h", "1d": "1d"}
 
 
@@ -93,17 +93,26 @@ class YFinanceFetcher(BaseFetcher):
         return candles
 
 
-class BinanceFetcher(BaseFetcher):
-    """Crypto (BTC/USDT, ETH/USDT, ...) via Binance through ccxt."""
+class OKXFetcher(BaseFetcher):
+    """Crypto (BTC/USDT, ETH/USDT, ...) via OKX through ccxt.
 
-    name = "binance"
-    # Binance's actual max candles per fetch_ohlcv call.
-    _MAX_LIMIT_PER_CALL = 1000
+    Was Binance until api.binance.com started returning HTTP 451
+    ("restricted location") to GitHub Actions runner IPs. OKX's public
+    market-data endpoints don't require an API key and aren't
+    geo-blocked for those runners.
+    """
+
+    name = "okx"
+    # OKX's actual max candles per fetch_ohlcv call (vs. Binance's 1000) —
+    # ccxt silently clamps a higher `limit` down to this rather than
+    # erroring, so this must be accurate or `_fetch_paginated` below will
+    # mistake a clamped-short batch for "reached the most recent candle".
+    _MAX_LIMIT_PER_CALL = 300
 
     def __init__(self) -> None:
         import ccxt
 
-        self._exchange = ccxt.binance({"enableRateLimit": True})
+        self._exchange = ccxt.okx({"enableRateLimit": True})
 
     def fetch(self, ticker: str, timeframe: str, limit: int) -> list[Candle]:
         tf = _CCXT_TIMEFRAME.get(timeframe, "1h")
@@ -127,8 +136,8 @@ class BinanceFetcher(BaseFetcher):
 
     def _fetch_paginated(self, ticker: str, tf: str, limit: int) -> list[list]:
         """Page backward in `_MAX_LIMIT_PER_CALL`-sized chunks to satisfy a
-        `limit` beyond Binance's per-call cap — e.g. ~1 year of 1h candles
-        (8760) needs ~9 calls. `enableRateLimit=True` (set in `__init__`)
+        `limit` beyond OKX's per-call cap — e.g. ~1 year of 1h candles
+        (8760) needs ~29 calls. `enableRateLimit=True` (set in `__init__`)
         makes ccxt throttle these automatically.
         """
         tf_ms = self._exchange.parse_timeframe(tf) * 1000
@@ -176,7 +185,7 @@ class TradingViewFetcher(BaseFetcher):
         if self._mcp_client is None:
             raise RuntimeError(
                 "TradingView MCP client not configured; call "
-                "TradingViewFetcher.set_mcp_client() or use source='yfinance'/'binance'."
+                "TradingViewFetcher.set_mcp_client() or use source='yfinance'/'okx'."
             )
         raw = self._mcp_client.get_ohlcv(ticker, timeframe, limit)
         return [
@@ -205,8 +214,8 @@ class DataFetcher:
         if source not in self._fetchers:
             if source == "yfinance":
                 self._fetchers[source] = YFinanceFetcher()
-            elif source == "binance":
-                self._fetchers[source] = BinanceFetcher()
+            elif source == "okx":
+                self._fetchers[source] = OKXFetcher()
             elif source == "tradingview":
                 self._fetchers[source] = TradingViewFetcher()
             else:
